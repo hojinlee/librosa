@@ -244,9 +244,11 @@ def cqt(y, sr=22050, hop_length=512, fmin=None, n_bins=84,
 
             # The additional scaling of sqrt(2) here is to implicitly rescale
             # the filters
-            my_y = np.sqrt(2) * audio.resample(my_y, my_sr, my_sr/2.0,
-                                               res_type=res_type,
-                                               scale=True)
+            my_y = audio.resample(my_y, my_sr, my_sr/2.0,
+                                  res_type=res_type,
+                                  scale=True)
+            my_y[:] *= np.sqrt(2)
+
             my_sr /= 2.0
             my_hop //= 2
 
@@ -648,10 +650,14 @@ def icqt(C, sr=22050, hop_length=512, fmin=None,
         y = (audio.resample(y.real, 1, 2, scale=True) +
              1.j * audio.resample(y.imag, 1, 2, scale=True))
 
-        y = y[n_trim:-n_trim] / 2.0 + y_oct * np.sqrt(2)
+        # Scale down to implicitly rescale filters
+        y = y[n_trim:-n_trim] / 2 + y_oct
 
     # Chop down the length
     y = util.fix_length(y.real, f.shape[1] + hop_length * C.shape[1])
+
+    # Scale everything up so that the last octave is at unit scale
+    y[:] *= 2**n_octaves
 
     # Trim off the center-padding
     return np.ascontiguousarray(y[n_trim:-n_trim])
