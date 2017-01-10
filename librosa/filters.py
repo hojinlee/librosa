@@ -927,15 +927,12 @@ def window_sumsquare(window, n_frames, hop_length=512, win_length=None, n_fft=20
     >>> plt.subplot(3,1,1)
     >>> plt.plot(wss_256)
     >>> plt.title('hop_length=256')
-    >>> plt.ylim([0, 1.5])
     >>> plt.subplot(3,1,2)
     >>> plt.plot(wss_512)
     >>> plt.title('hop_length=512')
-    >>> plt.ylim([0, 1.5])
     >>> plt.subplot(3,1,3)
     >>> plt.plot(wss_1024)
     >>> plt.title('hop_length=1024')
-    >>> plt.ylim([0, 1.5])
     >>> plt.tight_layout()
 
     '''
