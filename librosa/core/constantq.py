@@ -524,6 +524,7 @@ def icqt(C, sr=22050, hop_length=512, fmin=None,
          tuning=0.0,
          filter_scale=1,
          norm=1,
+         sparsity=0.01,
          window='hann',
          scale=True):
     '''Compute the inverse constant-Q transform.
@@ -549,6 +550,12 @@ def icqt(C, sr=22050, hop_length=512, fmin=None,
     norm : {inf, -inf, 0, float > 0}
         Type of norm to use for basis function normalization.
         See `librosa.util.normalize`.
+
+    sparsity : float in [0, 1)
+        Sparsify the CQT basis by discarding up to `sparsity`
+        fraction of the energy in each basis.
+
+        Set `sparsity=0` to disable sparsification.
 
     window : str, tuple, number, or function
         Window specification for the basis filters.
@@ -616,7 +623,7 @@ def icqt(C, sr=22050, hop_length=512, fmin=None,
     n_trim = f.shape[1] // 2
 
     # Hermitian the filters and sparsify
-    f = util.sparsify_rows(f)
+    f = util.sparsify_rows(f, quantile=sparsity)
 
     y = None
 

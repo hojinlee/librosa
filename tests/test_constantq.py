@@ -338,7 +338,7 @@ def test_icqt():
     def __test(sr, scale, hop_length, over_sample, y):
 
         bins_per_octave = over_sample * 12
-        n_bins = 5 * bins_per_octave
+        n_bins = 6 * bins_per_octave
 
         C = librosa.cqt(y, sr=sr, n_bins=n_bins,
                         bins_per_octave=bins_per_octave,
@@ -355,11 +355,12 @@ def test_icqt():
         y = y[sr//4:-sr//4]
         yinv = yinv[sr//4:-sr//4]
 
-        assert np.allclose(y, yinv), (np.max(yinv), np.max(y))
+        assert np.allclose(y, yinv), (np.max(np.abs(yinv)),
+                                      np.max(np.abs(y)))
 
     for sr in [22050, 44100]:
         y = make_signal(sr, 1.5, fmin='C2', fmax='C6')
-        for scale in [False, True]:
-            for hop_length in [64, 128, 256, 512]:
-                for over_sample in [1, 3]:
+        for over_sample in [1, 3]:
+            for scale in [False, True]:
+                for hop_length in [64, 128, 256, 512]:
                     yield __test, sr, scale, hop_length, over_sample, y
