@@ -48,16 +48,21 @@ def __test_cqt_size(y, sr, hop_length, fmin, n_bins, bins_per_octave,
     return cqt_output
 
 
-def make_signal(sr, duration, fmax='C8'):
+def make_signal(sr, duration, fmin='C1', fmax='C8'):
     ''' Generates a linear sine sweep '''
 
-    fmin = librosa.note_to_hz('C1') / sr
+    if fmin is None:
+        fmin = 0.01
+    else:
+        fmin = librosa.note_to_hz(fmin) / sr
+
     if fmax is None:
         fmax = 0.5
     else:
         fmax = librosa.note_to_hz(fmax) / sr
 
-    return np.sin(np.cumsum(2 * np.pi * np.logspace(np.log10(fmin), np.log10(fmax),
+    return np.sin(np.cumsum(2 * np.pi * np.logspace(np.log10(fmin),
+                                                    np.log10(fmax),
                                                     num=duration * sr)))
 
 
@@ -326,3 +331,24 @@ def test_cqt_real_warning():
 
     yield __test, False
     yield __test, True
+
+
+def test_icqt():
+
+    def __test(sr, scale, hop_length, y):
+
+        C = librosa.cqt(y, sr=sr, scale=scale, hop_length=hop_length)
+        yinv = librosa.icqt(C, sr=sr, scale=scale, hop_length=hop_length)
+
+        # Only test on the middle section
+        yinv = librosa.util.fix_length(yinv, len(y))
+        y = y[sr:-sr]
+        yinv = yinv[sr:-sr]
+
+        assert np.allclose(y, yinv), (np.max(yinv), np.max(y))
+
+    for sr in [22050, 44100]:
+        y = make_signal(sr, 3, fmax='C6')
+        for scale in [False, True]:
+            for hop_length in [128, 256]:
+                yield __test, sr, scale, hop_length, y
