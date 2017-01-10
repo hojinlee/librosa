@@ -335,20 +335,31 @@ def test_cqt_real_warning():
 
 def test_icqt():
 
-    def __test(sr, scale, hop_length, y):
+    def __test(sr, scale, hop_length, over_sample, y):
 
-        C = librosa.cqt(y, sr=sr, scale=scale, hop_length=hop_length)
-        yinv = librosa.icqt(C, sr=sr, scale=scale, hop_length=hop_length)
+        bins_per_octave = over_sample * 12
+        n_bins = 5 * bins_per_octave
+
+        C = librosa.cqt(y, sr=sr, n_bins=n_bins,
+                        bins_per_octave=bins_per_octave,
+                        scale=scale,
+                        hop_length=hop_length)
+
+        yinv = librosa.icqt(C, sr=sr,
+                            scale=scale,
+                            hop_length=hop_length,
+                            bins_per_octave=bins_per_octave)
 
         # Only test on the middle section
         yinv = librosa.util.fix_length(yinv, len(y))
-        y = y[sr:-sr]
-        yinv = yinv[sr:-sr]
+        y = y[sr//4:-sr//4]
+        yinv = yinv[sr//4:-sr//4]
 
         assert np.allclose(y, yinv), (np.max(yinv), np.max(y))
 
     for sr in [22050, 44100]:
-        y = make_signal(sr, 3, fmax='C6')
+        y = make_signal(sr, 1.5, fmin='C2', fmax='C6')
         for scale in [False, True]:
-            for hop_length in [128, 256]:
-                yield __test, sr, scale, hop_length, y
+            for hop_length in [64, 128, 256, 512]:
+                for over_sample in [1, 3]:
+                    yield __test, sr, scale, hop_length, over_sample, y
