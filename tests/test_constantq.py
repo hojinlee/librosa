@@ -362,5 +362,5 @@ def test_icqt():
         y = make_signal(sr, 1.5, fmin='C2', fmax='C6')
         for over_sample in [1, 3]:
             for scale in [False, True]:
-                for hop_length in [64, 128, 256, 512]:
+                for hop_length in [64, 128, 384, 512]:
                     yield __test, sr, scale, hop_length, over_sample, y

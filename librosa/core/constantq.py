@@ -594,9 +594,6 @@ def icqt(C, sr=22050, hop_length=512, fmin=None,
 
     fmin_t = np.min(freqs)
 
-    # Note: if using f-hermitian instead of pinv(f),
-    # the norm should be flipped to its dual (1<->inf, 2<->2, etc)
-
     # Make the filter bank
     f, lengths = filters.constant_q(sr=sr,
                                     fmin=fmin_t,
