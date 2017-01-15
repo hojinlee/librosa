@@ -647,16 +647,6 @@ def icqt(C, sr=22050, hop_length=512, fmin=None,
 
             y_oct[sl] += Cf[:, i]
 
-        # Compute the window inversion profiles
-#        win_ss = np.zeros_like(y_oct)
-#        for length in lengths[slice_]:
-#            win_ss += filters.window_sumsquare(window, C.shape[1] + 1,
-#                                               hop_length=hop_length * 2**(-octave),
-#                                               win_length=length,
-#                                               n_fft=f.shape[1])
-#        good_idx = win_ss > util.tiny(win_ss)
-#        y_oct[good_idx] /= win_ss[good_idx]
-
         if y is None:
             y = y_oct
             continue
